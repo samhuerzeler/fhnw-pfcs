@@ -109,17 +109,15 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         gl.glEnable(GL2.GL_LIGHTING);
 
         // earth
+        gl.glPushMatrix();
         gl.glRotated(rot2, 0, 1, 0);
         gl.glTranslated(6, 0, 0);
         gl.glRotated(rot, 0, 1, 0);
         gl.glRotated(-90, 1, 0, 0);
         drawShpere(gl, 0, 0, 0, 0.3, 50, 50);
+        gl.glPopMatrix();
 
         // sun
-        gl.glRotated(90, 1, 0, 0);
-        gl.glRotated(-rot, 0, 1, 0);
-        gl.glTranslated(-6, 0, 0);
-        gl.glRotated(-rot2, 0, 1, 0);
         gl.glRotated(-90, 1, 0, 0);
         drawShpere(gl, 0, 0, 0, 3, 50, 50);
 
