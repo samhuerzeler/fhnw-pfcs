@@ -97,13 +97,13 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
-        // kamerasystem
+        // camera system
         translateCam(gl, 0, 0, 2);
         rotateCam(gl, -elev, 1, 0, 0);
         rotateCam(gl, azim, 0, 1, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, lightPos, 0);
 
-        // objektsystem
+        // object system
         gl.glDisable(GL2.GL_LIGHTING);
         zeichneAchsen(gl, 6);
         gl.glEnable(GL2.GL_LIGHTING);
