@@ -15,9 +15,7 @@ public class Time {
     }
 
     public static double getDelta() {
-        //return (currentTime - lastTime) / 1000000000.0;
-
-        return 0.015;
+        return (currentTime - lastTime) / 1000000000.0;
     }
 
     public static void init() {
