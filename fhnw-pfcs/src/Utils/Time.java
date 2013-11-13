@@ -1,4 +1,4 @@
-package assignment_2;
+package Utils;
 
 public class Time {
 
