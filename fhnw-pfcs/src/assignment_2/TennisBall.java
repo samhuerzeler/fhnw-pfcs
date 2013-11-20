@@ -1,5 +1,8 @@
 package assignment_2;
 
+import Utils.Physics;
+import Utils.Time;
+import Utils.Vector3d;
 import java.awt.Color;
 import javax.media.opengl.GL2;
 
