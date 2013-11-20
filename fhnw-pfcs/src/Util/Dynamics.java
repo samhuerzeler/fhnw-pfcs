@@ -1,4 +1,4 @@
-package assignment_4;
+package Util;
 
 public abstract class Dynamics {
 

@@ -1,6 +1,6 @@
 package assignment_4;
 
-import Utils.Time;
+import Util.Time;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.Font;

@@ -1,7 +1,7 @@
 package assignment_3_1;
 
-import Utils.Time;
-import Utils.Vector3d;
+import Util.Time;
+import Util.Vector3d;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import java.awt.Color;
