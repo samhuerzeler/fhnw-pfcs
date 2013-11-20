@@ -6,20 +6,38 @@ import javax.media.opengl.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.media.opengl.awt.GLCanvas;
+import Util.Dynamics;
+import Util.Time;
+import Util.Vector3d;
+import java.util.ArrayList;
 
-public class Kugel implements WindowListener, GLEventListener, KeyListener {
+public class Lorenz implements WindowListener, GLEventListener, KeyListener {
 
-    GLCanvas canvas;
-    double left = -10, right = 10;
-    double bottom, top;
-    double near = -100, far = 100;
-    double elev = 10;
-    double azim = 40;
-    double dist = 4;
-    double earthRotation = 0;
-    double orbitRotation = 0;
-    double rotStep = 1;
+    private GLCanvas canvas;
+    private double left = -50, right = 50;
+    private double bottom, top;
+    private double near = -100, far = 100;
+    private double elev = 10;
+    private double azim = 40;
     private GLUT glut = new GLUT();
+    private LorenzDynamics lorenzDynamics = new LorenzDynamics();
+    private double[] x = {-20, -10, 10};
+    private ArrayList<Vector3d> points = new ArrayList();
+
+    class LorenzDynamics extends Dynamics {
+
+        public LorenzDynamics() {
+        }
+
+        @Override
+        public double[] f(double[] x) {
+            double[] y = new double[3];
+            y[0] = 10 * x[1] - 10 * x[0];
+            y[1] = 28 * x[0] - x[1] - x[0] * x[2];
+            y[2] = x[0] * x[1] - (8.0 / 3.0) * x[2];
+            return y;
+        }
+    }
 
     void rotateCam(GL2 gl, double phi, double nx, double ny, double nz) {
         gl.glRotated(-phi, nx, ny, nz);
@@ -40,6 +58,16 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         return cross(u, v);
     }
 
+    void drawPoints(GL2 gl, ArrayList<Vector3d> points) {
+        gl.glColor3d(1, 1, 1);
+        gl.glBegin(GL2.GL_LINE_STRIP);
+        for (int i = 0; i < points.size(); i++) {
+            Vector3d p = points.get(i);
+            gl.glVertex3d(p.x, p.y, p.z);
+        }
+        gl.glEnd();
+    }
+
     void drawAxes(GL2 gl, double a) {
         gl.glBegin(GL2.GL_LINES);
         gl.glVertex3d(0, 0, 0);
@@ -56,7 +84,7 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         glut.glutSolidSphere(radius, slices, stacks);
     }
 
-    public Kugel() {
+    public Lorenz() {
         Frame f = new Frame("Kugel");
         canvas = new GLCanvas();
         f.setSize(800, 600);
@@ -69,10 +97,11 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         f.setVisible(true);
         FPSAnimator anim = new FPSAnimator(canvas, 60, true);
         anim.start();
+        Time.init();
     }
 
     public static void main(String[] args) {
-        new Kugel();
+        new Lorenz();
     }
 
     @Override
@@ -94,6 +123,8 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         gl.glColor3d(1, 1, 1);
 
+        Time.update();
+
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
@@ -105,24 +136,22 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
 
         // object system
         gl.glDisable(GL2.GL_LIGHTING);
-        drawAxes(gl, 6);
+        drawAxes(gl, 20);
         gl.glEnable(GL2.GL_LIGHTING);
 
         // earth
         gl.glPushMatrix();
-        gl.glRotated(orbitRotation, 0, 1, 0);
-        gl.glTranslated(6, 0, 0);
-        gl.glRotated(earthRotation, 0, 1, 0);
-        gl.glRotated(-90, 1, 0, 0);
-        drawShpere(gl, 0, 0, 0, 0.3, 10, 10);
+        gl.glTranslated(x[0], x[1], x[2]);
+        drawShpere(gl, 0, 0, 0, 0.3, 20, 20);
+        double dt = Time.getDelta() / 2;
+        x = lorenzDynamics.runge(x, dt);
         gl.glPopMatrix();
 
-        // sun
-        gl.glRotated(-90, 1, 0, 0);
-        drawShpere(gl, 0, 0, 0, 3, 50, 50);
-
-        earthRotation += rotStep;
-        ++orbitRotation;
+        // draw CHAOS
+        points.add(new Vector3d(x[0], x[1], x[2]));
+        gl.glDisable(GL2.GL_LIGHTING);
+        drawPoints(gl, points);
+        gl.glEnable(GL2.GL_LIGHTING);
     }
 
     @Override
@@ -190,12 +219,6 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
                 break;
             case KeyEvent.VK_D:
                 azim += 3;
-                break;
-            case KeyEvent.VK_UP:
-                rotStep++;
-                break;
-            case KeyEvent.VK_DOWN:
-                rotStep--;
                 break;
         }
     }
