@@ -40,7 +40,7 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         return cross(u, v);
     }
 
-    void zeichneAchsen(GL2 gl, double a) {
+    void drawAxes(GL2 gl, double a) {
         gl.glBegin(GL2.GL_LINES);
         gl.glVertex3d(0, 0, 0);
         gl.glVertex3d(a, 0, 0);
@@ -57,7 +57,7 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
     }
 
     public Kugel() {
-        Frame f = new Frame("MySecond");
+        Frame f = new Frame("Kugel");
         canvas = new GLCanvas();
         f.setSize(800, 600);
         f.setBackground(Color.gray);
@@ -105,7 +105,7 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
 
         // object system
         gl.glDisable(GL2.GL_LIGHTING);
-        zeichneAchsen(gl, 6);
+        drawAxes(gl, 6);
         gl.glEnable(GL2.GL_LIGHTING);
 
         // earth
@@ -114,7 +114,7 @@ public class Kugel implements WindowListener, GLEventListener, KeyListener {
         gl.glTranslated(6, 0, 0);
         gl.glRotated(rot, 0, 1, 0);
         gl.glRotated(-90, 1, 0, 0);
-        drawShpere(gl, 0, 0, 0, 0.3, 50, 50);
+        drawShpere(gl, 0, 0, 0, 0.3, 10, 10);
         gl.glPopMatrix();
 
         // sun
