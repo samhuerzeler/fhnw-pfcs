@@ -22,17 +22,14 @@ public class Vector3d {
         this.z = z;
     }
 
-    public Vector3d cross(Vector3d vec1, Vector3d vec2) {
-        // TODO...
-        Vector3d vec3 = new Vector3d();
-
-
-
-        return vec3;
+    public Vector3d cross(Vector3d v1, Vector3d v2) {
+        return new Vector3d(
+                v1.y * v2.z - v1.z * v2.y,
+                v1.z * v2.x - v1.x * v2.z,
+                v1.x * v2.y - v1.y * v2.x);
     }
 
-    public double dot(Vector3d vec1, Vector3d vec2) {
-        // TODO...
-        return 0.0;
+    public double dot(Vector3d v1, Vector3d v2) {
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 }
