@@ -32,4 +32,16 @@ public class Vector3d {
     public double dot(Vector3d v1, Vector3d v2) {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
+
+    public Vector3d normal(Vector3d v1, Vector3d v2, Vector3d v3) {
+        Vector3d u = new Vector3d(
+                v2.x - v1.x,
+                v2.y - v1.y,
+                v2.z - v1.z);
+        Vector3d v = new Vector3d(
+                v3.x - v1.x,
+                v3.y - v1.y,
+                v3.z - v1.z);
+        return cross(u, v);
+    }
 }
