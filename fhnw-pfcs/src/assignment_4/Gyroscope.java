@@ -1,109 +1,41 @@
 package assignment_4;
 
-import Util.Dynamics;
 import Util.Time;
-import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.awt.TextRenderer;
-import com.jogamp.opengl.util.gl2.GLUT;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
+import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
-public class Gyroscope implements WindowListener, KeyListener, GLEventListener {
+import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.gl2.GLUT;
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class Gyroscope implements GLEventListener, KeyListener, WindowListener {
 
     private static final String TITLE = "Übung 4: Gyroskop";
     private static final int DISPLAY_WIDTH = 800;
     private static final int DISPLAY_HEIGHT = DISPLAY_WIDTH / 4 * 3;
     private static final int FPS = 60;
-    private double viewportWidth = 40;
-    TextRenderer textRenderer;
-    private double elev = 10;
-    private double azim = 40;
-    private double dist = 4;
-    private double cylRadius = 15;
-    private double cylLength = 4;
-    private double cylMass = 1.2d;
-    private GLUT glut = new GLUT();
-    private GyroDynamics gd = new GyroDynamics();
-
-    private class GyroDynamics extends Dynamics {
-
-        private final double Ix = (1.0 / 4.0) * cylMass * Math.pow(cylRadius, 2) + (1.0 / 12.0) * cylMass * Math.pow(cylLength, 2);
-        private final double Iy = Ix;
-        private final double Iz = (1.0 / 2.0) * cylMass * Math.pow(cylRadius, 2);
-        private double[] omega = {10, 0, 0};
-        private double[] q = {1, 0, 0, 0};
-        private double[] x = new double[omega.length + q.length];
-        private double phi;
-        private double[] a = new double[3];
-        private double dt = 0.03;
-
-        public GyroDynamics() {
-            // init x
-            System.arraycopy(omega, 0, x, 0, omega.length);
-            System.arraycopy(q, 0, x, omega.length, q.length);
-        }
-
-        private void calc() {
-            x = runge(x, dt);
-            // normalize q
-            double sum = 0.0;
-            for (int i = 3; i <= 6; i++) {
-                sum += x[i] * x[i];
-            }
-            double qq = Math.sqrt(sum);
-            for (int i = 3; i <= 6; i++) {
-                x[i] = x[i] / qq;
-            }
-
-            phi = Math.acos(x[3]);
-            sum = 0.0;
-            for (int i = 4; i <= 6; i++) {
-                sum += x[i] * x[i];
-            }
-            qq = Math.sqrt(sum);
-            for (int i = 0; i <= 2; i++) {
-                a[i] = x[i + 3] / qq;
-            }
-        }
-
-        public void draw(GL2 gl) {
-            gl.glPushMatrix();
-            gl.glRotated(phi, a[0], a[1], a[2]);
-            glut.glutWireCylinder(cylRadius, cylLength, 30, 30);
-            gl.glPopMatrix();
-            // calculate next step
-            calc();
-
-        }
-
-        @Override
-        public double[] f(double[] x) {
-
-            if (x.length > 7) {
-                throw new IndexOutOfBoundsException("System should be R7, not R" + x.length);
-            }
-
-            double[] xx = new double[x.length];
-
-            xx[0] = ((Iy - Iz) / Ix) * x[1] * x[2]; // w1
-            xx[1] = ((Iz - Ix) / Iy) * x[2] * x[0]; // w2
-            xx[2] = ((Ix - Iy) / Iz) * x[0] * x[1]; // w3
-            xx[3] = (-1.0 / 2.0) * (x[4] * x[0] + x[5] * x[1] + x[6] * x[2]); // q0
-            xx[4] = (1.0 / 2.0) * (x[3] * x[0] + x[5] * x[2] + x[6] * x[1]); // q1
-            xx[5] = (1.0 / 2.0) * (x[3] * x[1] + x[6] * x[1] + x[4] * x[2]); // q2
-            xx[6] = (1.0 / 2.0) * (x[3] * x[2] + x[4] * x[1] + x[5] * x[0]); // q3
-
-            return xx;
-        }
-    }
+    double left = -8, right = 8;
+    double bottom, top;
+    double near = -100, far = 100;
+    double elevation = -90;
+    double azimut = 45;
+    double distance = 10;
+    double phi = 60;
+    double omega = 3;
+    private TextRenderer textRenderer;
 
     public Gyroscope() {
         Frame f = new Frame(TITLE);
@@ -118,79 +50,156 @@ public class Gyroscope implements WindowListener, KeyListener, GLEventListener {
         FPSAnimator anim = new FPSAnimator(canvas, FPS, true);
         anim.start();
         Time.init();
-        reset();
     }
 
     public static void main(String[] args) {
         new Gyroscope();
     }
 
-    private void reset() {
+    private void rotateCam(GL2 gl, double elev, double azim) {
+        gl.glRotated(elev, 1, 0, 0);
+        gl.glRotated(-azim, 0, 1, 0);
     }
 
-    void rotateCam(GL2 gl, double phi, double nx, double ny, double nz) {
-        gl.glRotated(-phi, nx, ny, nz);
+    private void drawBase(GL2 gl, GLUT glut, double height) {
+        gl.glPushMatrix();
+        {
+            gl.glColor3d(1, 1, 1);
+            glut.glutSolidCylinder(0.08, -height, 64, 64);
+        }
+        gl.glPopMatrix();
     }
 
-    void translateCam(GL2 gl, double dx, double dy, double dz) {
-        gl.glTranslated(dx, dy, dz);
+    private void drawGyroscope(GL2 gl, GLUT glut, double phi, double size) {
+        gl.glPushMatrix();
+        {
+            gl.glTranslated(-0.05, 0, -(size / 2));
+
+            // stab
+            gl.glColor3d(1, 1, 1);
+            glut.glutSolidCylinder(0.08, size, 64, 64);
+
+            // gewicht
+            gl.glColor3d(1, 1, 1);
+            drawWeight(gl, glut, 0.3, 0.2, size * 56 / 60);
+            gl.glColor3d(1, 1, 1);
+            drawWeight(gl, glut, 0.2, 0.2, size * 50 / 60);
+            gl.glRotated(phi * 180 / Math.PI, 0, 0, 1);
+
+            // gyroscope
+            gl.glColor3d(1, 1, 1);
+            glut.glutSolidCylinder(1.2, 0.25, 20, 20);
+        }
+        gl.glPopMatrix();
     }
 
-    void drawAxes(GL2 gl, double a) {
-        gl.glBegin(GL2.GL_LINES);
-        gl.glVertex3d(0, 0, 0);
-        gl.glVertex3d(a, 0, 0);
-        gl.glVertex3d(0, 0, 0);
-        gl.glVertex3d(0, a, 0);
-        gl.glVertex3d(0, 0, 0);
-        gl.glVertex3d(0, 0, a);
-        gl.glEnd();
+    private void drawWeight(GL2 gl, GLUT glut, double size, double thickness, double pos) {
+        gl.glPushMatrix();
+        {
+            gl.glTranslated(0, 0, pos);
+            glut.glutSolidCylinder(size, thickness, 64, 64);
+        }
+        gl.glPopMatrix();
     }
 
     @Override
     public void init(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLUT glut = new GLUT();
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GLLightingFunc.GL_NORMALIZE);
+        gl.glEnable(GLLightingFunc.GL_LIGHT0);
         textRenderer = new TextRenderer(new Font("Arial", Font.BOLD, 12));
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        GLUT glut = new GLUT();
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glEnable(GLLightingFunc.GL_COLOR_MATERIAL);
+
         gl.glLoadIdentity();
+
         Time.update();
 
-        // camera system
-        translateCam(gl, 0, 0, dist);
-        rotateCam(gl, -elev, 1, 0, 0);
-        rotateCam(gl, azim, 0, 1, 0);
+        gl.glRotated(-90, 1, 0, 0);
+        phi = (phi + omega * Time.getDelta()) % 360;
 
-        drawAxes(gl, 10);
+        gl.glPushMatrix();
+        {
+            drawBase(gl, glut, 3);
+            rotateCam(gl, elevation, azimut);
+            drawGyroscope(gl, glut, phi, 6);
+        }
+        gl.glPopMatrix();
 
-        // object system
-        gl.glRotated(-30, azim, azim, azim);
-        gd.draw(gl);
+        // draw info
+        textRenderer.setColor(1f, 1f, 1f, 0.7f);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
+        textRenderer.draw("up/down: increase/decrease elevation", 4, drawable.getHeight() - 24);
+        textRenderer.draw("left/right: increase/decrease azimut", 4, drawable.getHeight() - 36);
+        textRenderer.draw("W/w: increase/decrease omega", 4, drawable.getHeight() - 48);
+        textRenderer.endRendering();
     }
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL2 gl = drawable.getGL().getGL2();
         gl.glViewport(0, 0, width, height);
-        double aspect = (double) height / width;
-        double left = -viewportWidth;
-        double right = viewportWidth;
-        double bottom = left * aspect;
-        double top = right * aspect;
-        double near = -100, far = 100;
-        gl.glMatrixMode(GL2.GL_PROJECTION);
+        double aspect = (float) height / width;
+        bottom = aspect * left;
+        top = aspect * right;
+        gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(left, right, bottom, top, near, far);
     }
 
     @Override
-    public void dispose(GLAutoDrawable glad) {
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_ESCAPE:
+                System.exit(0);
+                break;
+            case KeyEvent.VK_UP:
+                elevation = elevation - 3;
+                break;
+            case KeyEvent.VK_DOWN:
+                elevation = elevation + 3;
+                break;
+            case KeyEvent.VK_LEFT:
+                azimut = azimut - 3;
+                break;
+            case KeyEvent.VK_RIGHT:
+                azimut = azimut + 3;
+                break;
+        }
+        switch (e.getKeyChar()) {
+            case 'w':
+                omega = omega - 2;
+                break;
+            case 'W':
+                omega = omega + 2;
+                break;
+        }
+
+    }
+
+    @Override
+    public void dispose(GLAutoDrawable drawable) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
     }
 
     @Override
@@ -220,37 +229,5 @@ public class Gyroscope implements WindowListener, KeyListener, GLEventListener {
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE:
-                System.exit(0);
-                break;
-            case KeyEvent.VK_SPACE:
-                reset();
-                break;
-            case KeyEvent.VK_W:
-                elev++;
-                break;
-            case KeyEvent.VK_S:
-                elev--;
-                break;
-            case KeyEvent.VK_A:
-                azim--;
-                break;
-            case KeyEvent.VK_D:
-                azim++;
-                break;
-        }
     }
 }

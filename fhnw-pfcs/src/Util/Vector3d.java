@@ -33,6 +33,11 @@ public class Vector3d {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 
+    public Vector3d norm() {
+        double abs = Math.sqrt(x * x + y * y + z * z);
+        return new Vector3d(x / abs, y / abs, z / abs);
+    }
+
     public Vector3d normal(Vector3d v1, Vector3d v2, Vector3d v3) {
         Vector3d u = new Vector3d(
                 v2.x - v1.x,
@@ -43,5 +48,15 @@ public class Vector3d {
                 v3.y - v1.y,
                 v3.z - v1.z);
         return cross(u, v);
+    }
+
+    @Override
+    public Vector3d clone() {
+        return new Vector3d(x, y, z);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector3d[x: " + x + ", y: " + y + ", z: " + z + "]";
     }
 }

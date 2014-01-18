@@ -1,6 +1,5 @@
 package assignment_1;
 
-
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import javax.media.opengl.*;
@@ -29,7 +28,7 @@ public class SpringPendulum implements WindowListener, KeyListener, GLEventListe
     private GLU glu = new GLU();
     TextRenderer textRenderer;
 
-    // input variables
+    @SuppressWarnings("LeakingThisInConstructor")
     public SpringPendulum() {
         Frame frame = new Frame("Übung 1: Federpendel");
         frame.setSize(800, 600);
@@ -45,7 +44,7 @@ public class SpringPendulum implements WindowListener, KeyListener, GLEventListe
     }
 
     public static void main(String[] args) {
-        new SpringPendulum();
+        SpringPendulum springPendulum = new SpringPendulum();
     }
 
     private void showKeyBindings(GLAutoDrawable drawable) {
@@ -85,10 +84,9 @@ public class SpringPendulum implements WindowListener, KeyListener, GLEventListe
         glu.gluQuadricDrawStyle(sphere, GLU.GLU_LINE);
         glu.gluQuadricNormals(sphere, GLU.GLU_FLAT);
         glu.gluQuadricOrientation(sphere, GLU.GLU_OUTSIDE);
-        final double radius = r;
         final int slices = 16;
         final int stacks = 16;
-        glu.gluSphere(sphere, radius, slices, stacks);
+        glu.gluSphere(sphere, r, slices, stacks);
         glu.gluDeleteQuadric(sphere);
 
         // debug line (sphere ym)

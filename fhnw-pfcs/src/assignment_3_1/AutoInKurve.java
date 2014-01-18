@@ -30,6 +30,7 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
     double elevation = -60;
     double azimut = 20;
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public AutoInKurve() {
         Frame f = new Frame(TITLE);
         f.setSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -47,7 +48,7 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
     }
 
     public static void main(String args[]) {
-        new AutoInKurve();
+        AutoInKurve autoInKuve = new AutoInKurve();
     }
 
     void rotateCam(GL2 gl, double phi, double nx, double ny, double nz) {

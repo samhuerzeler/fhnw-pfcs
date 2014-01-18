@@ -28,6 +28,7 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
     TextRenderer textRenderer;
     double carWidth = 5;
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public AutoInKurve() {
         Frame f = new Frame(TITLE);
         f.setSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -45,7 +46,7 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
     }
 
     public static void main(String args[]) {
-        new AutoInKurve();
+        AutoInKurve autoInKurve = new AutoInKurve();
     }
 
     private void showKeyBindings(GLAutoDrawable drawable) {

@@ -21,7 +21,7 @@ public class SchieferWurf implements WindowListener, GLEventListener, KeyListene
     private double viewportWidth;
     private Random random = new Random();
     private boolean enabled; // ball machine enabled
-    private ArrayList<TennisBall> balls = new ArrayList<TennisBall>();
+    private ArrayList<TennisBall> balls = new ArrayList<>();
     private double frames; // number of time steps/frames
     private double startVelocity; // m/s
     private Vector3d startPosition;
@@ -32,6 +32,7 @@ public class SchieferWurf implements WindowListener, GLEventListener, KeyListene
     private double distrMultiplier;
     TextRenderer textRenderer;
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public SchieferWurf() {
         Frame f = new Frame(TITLE);
         f.setSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -49,7 +50,7 @@ public class SchieferWurf implements WindowListener, GLEventListener, KeyListene
     }
 
     public static void main(String[] args) {
-        new SchieferWurf();
+        SchieferWurf schieferWurd = new SchieferWurf();
     }
 
     private void reset() {
