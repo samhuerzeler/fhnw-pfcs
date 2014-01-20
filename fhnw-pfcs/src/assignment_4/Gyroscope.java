@@ -53,7 +53,7 @@ public class Gyroscope implements GLEventListener, KeyListener, WindowListener {
     }
 
     public static void main(String[] args) {
-        new Gyroscope();
+        Gyroscope gyros = new Gyroscope();
     }
 
     private void rotateCam(GL2 gl, double elev, double azim) {
