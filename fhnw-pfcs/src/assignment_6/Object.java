@@ -20,21 +20,15 @@ public abstract class Object {
     protected Color color;
 
     public Object(Vector3d position, Vector3d angleSpeed, double v0, double angle) {
-        // class variables
         this.position = position;
         this.angleSpeed = angleSpeed;
 
         angle = Math.toRadians(angle);
         speed = new Vector3d(Math.cos(angle) * v0, Math.sin(angle) * v0, 0);
 
-        // quaternion
-        q = new Quaternion(1, 0, 0, 0);
-
-        // orientation
-        orientation = new Quaternion(0, 0, 0, 0);
-
-        // dynamics
-        rotateDyn = new RotateDynamics();
+        q = new Quaternion(1, 0, 0, 0); // quaternion
+        orientation = new Quaternion(0, 0, 0, 0); // orientation
+        rotateDyn = new RotateDynamics(); // dynamics
     }
 
     protected void setDullness(double[] dullness) {

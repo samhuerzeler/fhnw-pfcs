@@ -1,5 +1,6 @@
 package assignment_5;
 
+import Util.Dynamics;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -55,7 +56,7 @@ public class ParticleFlow implements GLEventListener, KeyListener, WindowListene
         anim.start();
     }
 
-    public final class FlowDynamics extends Util.Dynamics {
+    public final class FlowDynamics extends Dynamics {
 
         private double r2;
         private double r4;

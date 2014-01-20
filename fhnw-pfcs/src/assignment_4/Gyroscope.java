@@ -106,7 +106,6 @@ public class Gyroscope implements GLEventListener, KeyListener, WindowListener {
     public void init(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        GLUT glut = new GLUT();
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glEnable(GLLightingFunc.GL_NORMALIZE);
         gl.glEnable(GLLightingFunc.GL_LIGHT0);
