@@ -49,17 +49,6 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
         AutoInKurve autoInKurve = new AutoInKurve();
     }
 
-    private void showKeyBindings(GLAutoDrawable drawable) {
-        textRenderer.setColor(1f, 1f, 1f, 0.7f);
-        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
-        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
-        textRenderer.draw("up/down: increase/decrease velocity", 4, drawable.getHeight() - 36);
-        textRenderer.draw("left/right: change wheel rotation", 4, drawable.getHeight() - 48);
-        textRenderer.draw("R: show helper lines", 4, drawable.getHeight() - 60);
-        textRenderer.endRendering();
-    }
-
     private void drawLine(GL2 gl, double a) {
         gl.glBegin(GL2.GL_LINES);
         gl.glVertex2d(0, 0);
@@ -147,13 +136,22 @@ public class AutoInKurve implements WindowListener, KeyListener, GLEventListener
         }
         gl.glEnd();
 
+        // draw info
         textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
         textRenderer.draw("rotation angle: " + car.getRotation(), 10, 44);
         textRenderer.draw("velocity: " + car.getVelocity(), 10, 32);
         textRenderer.draw("centripetal force: " + car.getCentripetalForce(), 10, 20);
         textRenderer.endRendering();
 
-        showKeyBindings(drawable);
+        // draw hotkeys
+        textRenderer.setColor(1f, 1f, 1f, 0.7f);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
+        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
+        textRenderer.draw("up/down: increase/decrease velocity", 4, drawable.getHeight() - 36);
+        textRenderer.draw("left/right: change wheel rotation", 4, drawable.getHeight() - 48);
+        textRenderer.draw("R: show helper lines", 4, drawable.getHeight() - 60);
+        textRenderer.endRendering();
     }
 
     @Override

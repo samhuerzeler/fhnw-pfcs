@@ -130,7 +130,7 @@ public class ParticleFlow implements GLEventListener, KeyListener, WindowListene
         }
         gl.glEnd();
 
-        // draw info
+        // draw hotkeys
         textRenderer.setColor(1f, 1f, 1f, 0.7f);
         textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
         textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);

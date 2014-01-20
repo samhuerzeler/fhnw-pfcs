@@ -66,18 +66,6 @@ public class SchieferWurf implements WindowListener, GLEventListener, KeyListene
         balls.clear();
     }
 
-    private void showKeyBindings(GLAutoDrawable drawable) {
-        textRenderer.setColor(1f, 1f, 1f, 0.7f);
-        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
-        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
-        textRenderer.draw("up/down: increase/decrease start velocity", 4, drawable.getHeight() - 36);
-        textRenderer.draw("left/right: increase/decrease angle", 4, drawable.getHeight() - 48);
-        textRenderer.draw("W/A/S/D: change start position", 4, drawable.getHeight() - 60);
-        textRenderer.draw("F/C: increase/decrease number of balls thrown", 4, drawable.getHeight() - 72);
-        textRenderer.endRendering();
-    }
-
     private void drawCross(GL2 gl) {
         gl.glBegin(GL2.GL_LINES);
         {
@@ -159,7 +147,16 @@ public class SchieferWurf implements WindowListener, GLEventListener, KeyListene
         }
         gl.glPopMatrix();
 
-        showKeyBindings(drawable);
+        // draw hotkeys
+        textRenderer.setColor(1f, 1f, 1f, 0.7f);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
+        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
+        textRenderer.draw("up/down: increase/decrease start velocity", 4, drawable.getHeight() - 36);
+        textRenderer.draw("left/right: increase/decrease angle", 4, drawable.getHeight() - 48);
+        textRenderer.draw("W/A/S/D: change start position", 4, drawable.getHeight() - 60);
+        textRenderer.draw("F/C: increase/decrease number of balls thrown", 4, drawable.getHeight() - 72);
+        textRenderer.endRendering();
     }
 
     @Override

@@ -47,18 +47,6 @@ public class SpringPendulum implements WindowListener, KeyListener, GLEventListe
         SpringPendulum springPendulum = new SpringPendulum();
     }
 
-    private void showKeyBindings(GLAutoDrawable drawable) {
-        textRenderer.setColor(1f, 1f, 1f, 0.7f);
-        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
-        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
-        textRenderer.draw("up/down: increase/decrease speed", 4, drawable.getHeight() - 36);
-        textRenderer.draw("left/right: increase/decrease amplitude", 4, drawable.getHeight() - 48);
-        textRenderer.draw("W/A/S/D: rotate camera", 4, drawable.getHeight() - 60);
-        textRenderer.draw("R: show helper circle/lines", 4, drawable.getHeight() - 72);
-        textRenderer.endRendering();
-    }
-
     private void drawAxes(GL2 gl) {
         gl.glBegin(GL2.GL_LINES);
         {
@@ -198,7 +186,16 @@ public class SpringPendulum implements WindowListener, KeyListener, GLEventListe
         //drawCircle(gl, ballRadius, x, y, true);
         drawShpere(gl, ballRadius, x, y, z);
 
-        showKeyBindings(drawable);
+        // draw hotkeys
+        textRenderer.setColor(1f, 1f, 1f, 0.7f);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.draw("Escape: exit program", 4, drawable.getHeight() - 12);
+        textRenderer.draw("Space: reset", 4, drawable.getHeight() - 24);
+        textRenderer.draw("up/down: increase/decrease speed", 4, drawable.getHeight() - 36);
+        textRenderer.draw("left/right: increase/decrease amplitude", 4, drawable.getHeight() - 48);
+        textRenderer.draw("W/A/S/D: rotate camera", 4, drawable.getHeight() - 60);
+        textRenderer.draw("R: show helper circle/lines", 4, drawable.getHeight() - 72);
+        textRenderer.endRendering();
     }
 
     @Override
